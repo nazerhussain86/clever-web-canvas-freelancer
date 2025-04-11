@@ -1,8 +1,29 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Download } from "lucide-react";
 
 const Hero = () => {
+  const handleDownloadCV = () => {
+    // Create a link element
+    const link = document.createElement('a');
+    
+    // Set the link's href to the path of the resume file
+    // Note: You would need to add your actual resume PDF to the public folder
+    link.href = '/john-doe-resume.pdf';
+    
+    // Set the download attribute to suggest a filename
+    link.download = 'John-Doe-Resume.pdf';
+    
+    // Append the link to the document
+    document.body.appendChild(link);
+    
+    // Trigger the click event on the link
+    link.click();
+    
+    // Clean up - remove the link from the document
+    document.body.removeChild(link);
+  };
+
   return (
     <section
       id="home"
@@ -26,8 +47,13 @@ const Hero = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button size="lg">View My Work</Button>
-            <Button size="lg" variant="outline">
-              Download CV
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={handleDownloadCV}
+              className="flex items-center gap-2"
+            >
+              <Download size={18} /> Download CV
             </Button>
           </div>
         </div>
