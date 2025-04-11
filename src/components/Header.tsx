@@ -1,11 +1,13 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +30,10 @@ const Header = () => {
     { name: "Skills", href: "#skills" },
     { name: "Contact", href: "#contact" },
   ];
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <header
@@ -53,16 +59,24 @@ const Header = () => {
               {link.name}
             </a>
           ))}
+          <Button onClick={toggleTheme} variant="ghost" size="icon">
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+          </Button>
           <Button>Hire Me</Button>
         </nav>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-foreground/80 hover:text-primary"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center space-x-2">
+          <Button onClick={toggleTheme} variant="ghost" size="icon" className="mr-2">
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+          </Button>
+          <button
+            className="text-foreground/80 hover:text-primary"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
