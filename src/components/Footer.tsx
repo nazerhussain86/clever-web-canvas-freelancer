@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
-            <h2 className="text-2xl font-bold gradient-text">DevPortfolio</h2>
+            <h2 className="text-2xl font-bold gradient-text">CodeCraft</h2>
             <p className="text-sm text-foreground/70 mt-2">
               Creating exceptional digital experiences
             </p>
