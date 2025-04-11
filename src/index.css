@@ -112,4 +112,8 @@
   .card-hover {
     @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
+  
+  .list-item {
+    @apply pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-primary;
+  }
 }
