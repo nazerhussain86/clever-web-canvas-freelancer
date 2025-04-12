@@ -44,8 +44,8 @@ const Hero = () => {
           </div>
           
           <p className="text-primary mb-2">Hello, I'm</p>
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 relative">
-            <span className="typing-animation">Nazer Hussain A</span>
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 relative pulse-text">
+            Nazer Hussain A
             <span className="absolute -bottom-2 left-0 w-1/3 h-1 bg-gradient-to-r from-primary to-transparent"></span>
           </h1>
           <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground/80 mb-6">
@@ -67,6 +67,13 @@ const Hero = () => {
               className="flex items-center gap-2 hover:bg-primary/10 transition-colors"
             >
               <Download size={18} /> Download CV
+            </Button>
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="flex items-center gap-2 pulse-button"
+            >
+              Hire Me
             </Button>
           </div>
           

@@ -174,25 +174,21 @@
     20%, 100% { transform: translateX(100%) rotate(30deg); }
   }
   
-  /* Typing animation for name */
-  .typing-animation {
-    display: inline-block;
-    overflow: hidden;
-    border-right: 0.15em solid hsl(var(--primary));
-    white-space: nowrap;
-    margin: 0;
-    animation: typing 3.5s steps(30, end), 
-               blink-caret 0.75s step-end infinite;
+  /* Pulse effect for text */
+  .pulse-text {
+    animation: pulse-text-animation 3s infinite;
   }
   
-  @keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
-  }
-  
-  @keyframes blink-caret {
-    from, to { border-color: transparent }
-    50% { border-color: hsl(var(--primary)); }
+  @keyframes pulse-text-animation {
+    0% {
+      text-shadow: 0 0 0 rgba(139, 92, 246, 0);
+    }
+    50% {
+      text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+    100% {
+      text-shadow: 0 0 0 rgba(139, 92, 246, 0);
+    }
   }
   
   /* Pulse button effect */
@@ -224,5 +220,15 @@
       opacity: 0.7;
     }
   }
+  
+  /* Skills and testimonial carousel styling */
+  .carousel-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 transition-all;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .carousel-card:hover {
+    @apply border-primary/30;
+    transform: translateY(-5px);
+  }
 }
-
