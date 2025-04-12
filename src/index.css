@@ -109,11 +109,68 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400;
   }
   
+  .gradient-border {
+    @apply relative before:absolute before:inset-0 before:p-[2px] before:bg-gradient-to-r before:from-primary before:to-blue-400 before:rounded-xl before:-z-10;
+  }
+  
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/40 dark:bg-black/30 shadow-lg border border-white/20 dark:border-white/10;
+  }
+  
+  .floating-animation {
+    animation: floating 3s ease-in-out infinite;
+  }
+  
+  @keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
   .card-hover {
     @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
   
   .list-item {
     @apply pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-primary;
+  }
+  
+  .animated-gradient-bg {
+    background: linear-gradient(-45deg, #9b87f5, #7E69AB, #8B5CF6, #D946EF);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .shine-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shine-effect::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    animation: shine 6s infinite;
+  }
+  
+  @keyframes shine {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    20%, 100% { transform: translateX(100%) rotate(30deg); }
   }
 }
