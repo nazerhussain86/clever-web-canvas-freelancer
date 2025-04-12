@@ -3,8 +3,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Projects from "@/components/Projects";
-import Skills from "@/components/Skills";
-import Certifications from "@/components/Certifications";
+import SkillsAndCertifications from "@/components/SkillsAndCertifications";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -18,8 +17,7 @@ const Index = () => {
           <Hero />
           <About />
           <Projects />
-          <Skills />
-          <Certifications />
+          <SkillsAndCertifications />
           <Contact />
         </main>
         <Footer />
