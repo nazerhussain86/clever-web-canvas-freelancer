@@ -1,8 +1,69 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
+import { useEffect, useRef } from "react";
+
+// Define our programming languages data
+const programmingLanguages = [
+  { name: "C#", color: "bg-gradient-to-r from-purple-500 to-blue-600" },
+  { name: "MVC", color: "bg-gradient-to-r from-blue-500 to-cyan-400" },
+  { name: "Python", color: "bg-gradient-to-r from-blue-600 to-green-500" },
+  { name: "React", color: "bg-gradient-to-r from-cyan-400 to-blue-500" },
+  { name: "JavaScript", color: "bg-gradient-to-r from-yellow-400 to-amber-500" },
+  { name: "TypeScript", color: "bg-gradient-to-r from-blue-400 to-indigo-500" },
+  { name: "Node.js", color: "bg-gradient-to-r from-green-500 to-emerald-600" },
+  { name: "HTML", color: "bg-gradient-to-r from-orange-500 to-red-500" },
+  { name: "CSS", color: "bg-gradient-to-r from-blue-400 to-indigo-400" },
+  { name: "SQL", color: "bg-gradient-to-r from-sky-500 to-blue-600" },
+];
 
 const Hero = () => {
+  const floatingElementsRef = useRef<HTMLDivElement>(null);
+
+  // Initialize floating elements
+  useEffect(() => {
+    const container = floatingElementsRef.current;
+    if (!container) return;
+
+    // Clear existing elements if re-initializing
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    // Create floating elements
+    programmingLanguages.forEach((lang, index) => {
+      const element = document.createElement("div");
+      element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
+      element.style.transform = `translate(${Math.random() * 80}vw, ${Math.random() * 60}vh)`;
+      element.textContent = lang.name;
+      
+      // Animation properties
+      const speed = 0.5 + Math.random() * 1;
+      const directionX = Math.random() > 0.5 ? 1 : -1;
+      const directionY = Math.random() > 0.5 ? 1 : -1;
+      let posX = Math.random() * 80;
+      let posY = Math.random() * 60;
+
+      // Animate function
+      const animate = () => {
+        // Update position
+        posX += speed * directionX * 0.05;
+        posY += speed * directionY * 0.05;
+
+        // Boundary check
+        if (posX < 0 || posX > 80) posX = Math.random() * 80;
+        if (posY < 0 || posY > 60) posY = Math.random() * 60;
+
+        element.style.transform = `translate(${posX}vw, ${posY}vh)`;
+        requestAnimationFrame(animate);
+      };
+
+      // Add to container and start animation
+      container.appendChild(element);
+      requestAnimationFrame(animate);
+    });
+  }, []);
+
   const handleDownloadCV = () => {
     // Create a link element
     const link = document.createElement('a');
@@ -31,8 +92,10 @@ const Hero = () => {
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background z-0"></div>
       
-      {/* Animated patterns */}
-      <div className="absolute top-20 right-10 w-20 h-20 border-2 border-primary/20 rounded-full animate-[spin_25s_linear_infinite] opacity-70"></div>
+      {/* Floating programming languages container */}
+      <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden pointer-events-none"></div>
+      
+      {/* Animated patterns - remove the small circle on right top */}
       <div className="absolute bottom-20 left-10 w-32 h-32 border border-primary/10 rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-50"></div>
       <div className="absolute top-1/2 left-1/4 w-10 h-10 bg-blue-400/10 rounded-full animate-pulse"></div>
       
@@ -59,7 +122,7 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="pulse-button shine-effect">View My Work</Button>
+            <Button size="lg" className="shine-effect hover:bg-primary/80 transition-colors">View My Work</Button>
             <Button 
               size="lg" 
               variant="outline" 
