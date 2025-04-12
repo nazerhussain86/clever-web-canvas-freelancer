@@ -173,4 +173,56 @@
     0% { transform: translateX(-100%) rotate(30deg); }
     20%, 100% { transform: translateX(100%) rotate(30deg); }
   }
+  
+  /* Typing animation for name */
+  .typing-animation {
+    display: inline-block;
+    overflow: hidden;
+    border-right: 0.15em solid hsl(var(--primary));
+    white-space: nowrap;
+    margin: 0;
+    animation: typing 3.5s steps(30, end), 
+               blink-caret 0.75s step-end infinite;
+  }
+  
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+  
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: hsl(var(--primary)); }
+  }
+  
+  /* Pulse button effect */
+  .pulse-button {
+    position: relative;
+  }
+  
+  .pulse-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: hsl(var(--primary));
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    z-index: -1;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.3;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+  }
 }
+

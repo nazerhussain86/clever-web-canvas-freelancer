@@ -45,7 +45,7 @@ const Hero = () => {
           
           <p className="text-primary mb-2">Hello, I'm</p>
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 relative">
-            Nazer Hussain A
+            <span className="typing-animation">Nazer Hussain A</span>
             <span className="absolute -bottom-2 left-0 w-1/3 h-1 bg-gradient-to-r from-primary to-transparent"></span>
           </h1>
           <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground/80 mb-6">
@@ -59,7 +59,7 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="shine-effect">View My Work</Button>
+            <Button size="lg" className="pulse-button shine-effect">View My Work</Button>
             <Button 
               size="lg" 
               variant="outline" 
