@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -29,51 +28,94 @@ const Hero = () => {
     while (container.firstChild) {
       container.removeChild(container.firstChild);
     }
+    
+    // Get the container dimensions for boundary checks
+    const containerRect = container.getBoundingClientRect();
+    const containerWidth = containerRect.width;
+    const containerHeight = containerRect.height;
+    
+    // Calculate the right side starting point (50% of container width)
+    const rightSideStart = containerWidth * 0.5;
 
     // Create floating elements - restricted to right side
-    programmingLanguages.forEach((lang, index) => {
+    programmingLanguages.forEach((lang) => {
       const element = document.createElement("div");
       element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
       
-      // Position elements only on the right half of the screen
-      const posX = 50 + Math.random() * 40; // 50% to 90% of viewport width
-      const posY = Math.random() * 80; // 0% to 80% of viewport height
-      element.style.transform = `translate(${posX}vw, ${posY}vh)`;
+      // Size of the element (rough estimate - will be updated after rendering)
+      const elementWidth = 100; // approximate width in pixels
+      const elementHeight = 30; // approximate height in pixels
+      
+      // Position elements only on the right half of the container
+      // We use pixel values directly for precise positioning
+      const posX = rightSideStart + Math.random() * (containerWidth * 0.5 - elementWidth);
+      const posY = Math.random() * (containerHeight - elementHeight);
+      
+      element.style.transform = `translate(${posX}px, ${posY}px)`;
       element.textContent = lang.name;
       
       // Animation properties
       const speed = 0.5 + Math.random() * 1;
-      // Change from const to let for directionX and directionY
       let directionX = Math.random() > 0.5 ? 1 : -1;
       let directionY = Math.random() > 0.5 ? 1 : -1;
       let currentPosX = posX;
       let currentPosY = posY;
 
-      // Animate function - constrained to right side
+      // Add to container to get actual dimensions
+      container.appendChild(element);
+      
+      // Get actual element dimensions after rendering
+      const elementRect = element.getBoundingClientRect();
+      const actualWidth = elementRect.width;
+      const actualHeight = elementRect.height;
+
+      // Animate function - constrained to container
       const animate = () => {
         // Update position
-        currentPosX += speed * directionX * 0.05;
-        currentPosY += speed * directionY * 0.05;
+        currentPosX += speed * directionX * 0.5;
+        currentPosY += speed * directionY * 0.5;
 
-        // Boundary check - keep on right side
-        if (currentPosX < 50 || currentPosX > 90) {
-          currentPosX = Math.max(50, Math.min(90, currentPosX));
+        // Boundary check - keep on right side of container
+        if (currentPosX < rightSideStart || currentPosX > containerWidth - actualWidth) {
+          // Bounce off the boundary
+          currentPosX = Math.max(rightSideStart, Math.min(containerWidth - actualWidth, currentPosX));
           directionX *= -1; // Reverse direction when hitting boundary
         }
         
-        if (currentPosY < 0 || currentPosY > 80) {
-          currentPosY = Math.max(0, Math.min(80, currentPosY));
+        if (currentPosY < 0 || currentPosY > containerHeight - actualHeight) {
+          // Bounce off the boundary
+          currentPosY = Math.max(0, Math.min(containerHeight - actualHeight, currentPosY));
           directionY *= -1; // Reverse direction when hitting boundary
         }
 
-        element.style.transform = `translate(${currentPosX}vw, ${currentPosY}vh)`;
+        element.style.transform = `translate(${currentPosX}px, ${currentPosY}px)`;
         requestAnimationFrame(animate);
       };
 
-      // Add to container and start animation
-      container.appendChild(element);
+      // Start animation
       requestAnimationFrame(animate);
     });
+    
+    // Update container dimensions on window resize
+    const handleResize = () => {
+      // Reinitialize the floating elements when window is resized
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      
+      // Delay reinitialization slightly to ensure container dimensions are updated
+      setTimeout(() => {
+        // Call the useEffect function again
+        const event = new Event('resize');
+        window.dispatchEvent(event);
+      }, 200);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const handleDownloadCV = () => {
@@ -104,12 +146,7 @@ const Hero = () => {
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background z-0"></div>
       
-      {/* Floating programming languages container - positioned to overlay the right side */}
-      <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden pointer-events-none"></div>
-      
-      {/* Animated patterns - bottom left circle only */}
-      <div className="absolute bottom-20 left-10 w-32 h-32 border border-primary/10 rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-50"></div>
-      
+      {/* Floating programming languages container - right side only */}
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left side - Fixed content */}
@@ -170,10 +207,16 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Right side - Empty for floating languages */}
-          <div className="hidden md:block"></div>
+          {/* Right side - Container for floating languages */}
+          <div className="hidden md:block relative h-full">
+            {/* This div serves as a container for the floating elements */}
+            <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden"></div>
+          </div>
         </div>
       </div>
+      
+      {/* Animated circle */}
+      <div className="absolute bottom-20 left-10 w-32 h-32 border border-primary/10 rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-50"></div>
       
       <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
         <a
