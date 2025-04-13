@@ -8,74 +8,74 @@
 @layer base {
   :root {
     /* Light theme variables */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222 47% 11%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 222 47% 11%;
     
-    --primary: 252 75% 60%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 222 89% 60%;
+    --primary-foreground: 210 40% 98%;
     
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 215 14% 94%;
+    --secondary-foreground: 222 47% 11%;
     
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 215 14% 94%;
+    --muted-foreground: 217 19% 35%;
     
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 215 99% 95%;
+    --accent-foreground: 222 47% 11%;
     
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
     
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 252 75% 60%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 89% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 11%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 14% 94%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 222 89% 60%;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 252 100% 67%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 217 19% 27%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 217 19% 27%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 252 100% 67%;
+    --border: 217 19% 27%;
+    --input: 217 19% 27%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -98,11 +98,19 @@
   }
   
   .section-padding {
-    @apply py-20 px-6 md:px-10 lg:px-20;
+    @apply py-24 px-4 md:px-6 lg:px-8;
   }
   
   .section-title {
-    @apply text-3xl md:text-4xl lg:text-5xl font-bold mb-10;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold mb-6;
+  }
+  
+  .title-underline {
+    @apply relative after:absolute after:left-0 after:-bottom-3 after:h-1 after:w-16 after:bg-primary after:rounded-full;
+  }
+  
+  .title-underline-center {
+    @apply relative after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-3 after:h-1 after:w-16 after:bg-primary after:rounded-full;
   }
   
   .gradient-text {
@@ -113,122 +121,56 @@
     @apply relative before:absolute before:inset-0 before:p-[2px] before:bg-gradient-to-r before:from-primary before:to-blue-400 before:rounded-xl before:-z-10;
   }
   
-  .glass-effect {
-    @apply backdrop-blur-sm bg-white/40 dark:bg-black/30 shadow-lg border border-white/20 dark:border-white/10;
+  .glass-panel {
+    @apply bg-white/80 dark:bg-foreground/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl;
   }
   
-  .floating-animation {
-    animation: floating 3s ease-in-out infinite;
+  .backdrop-panel {
+    @apply bg-white/50 dark:bg-black/20 backdrop-blur-lg rounded-xl border border-white/30 dark:border-white/5 shadow-lg;
   }
   
-  @keyframes floating {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-  }
-  
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
-  }
-  
-  .list-item {
-    @apply pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-primary;
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
   }
   
   .animated-gradient-bg {
-    background: linear-gradient(-45deg, #9b87f5, #7E69AB, #8B5CF6, #D946EF);
+    background: linear-gradient(-45deg, #4f46e5, #3b82f6, #2563eb, #6366f1);
     background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
+    animation: gradient-shift 15s ease infinite;
   }
   
-  @keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1;
   }
   
-  .shine-effect {
-    position: relative;
-    overflow: hidden;
+  .list-feature {
+    @apply pl-6 relative before:content-[''] before:absolute before:left-0 before:top-1.5 before:h-3 before:w-3 before:bg-primary/20 before:border before:border-primary/50 before:rounded;
   }
   
-  .shine-effect::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-      to bottom right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    transform: rotate(30deg);
-    animation: shine 6s infinite;
+  .skill-tag {
+    @apply px-4 py-2 rounded-full bg-secondary text-foreground/80 text-sm font-medium transition-all hover:bg-primary hover:text-primary-foreground;
+  }
+  
+  .nav-link {
+    @apply relative hover:text-primary transition-colors after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full;
+  }
+  
+  .btn-shine {
+    @apply overflow-hidden relative;
+  }
+  
+  .btn-shine::after {
+    @apply content-[''] absolute top-0 -left-full w-full h-full bg-white/20 transform skew-x-12;
+    animation: shine 2.2s ease-out infinite;
   }
   
   @keyframes shine {
-    0% { transform: translateX(-100%) rotate(30deg); }
-    20%, 100% { transform: translateX(100%) rotate(30deg); }
-  }
-  
-  /* Pulse effect for text */
-  .pulse-text {
-    animation: pulse-text-animation 3s infinite;
-  }
-  
-  @keyframes pulse-text-animation {
-    0% {
-      text-shadow: 0 0 0 rgba(139, 92, 246, 0);
-    }
-    50% {
-      text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-    }
     100% {
-      text-shadow: 0 0 0 rgba(139, 92, 246, 0);
+      left: 150%;
     }
   }
   
-  /* Pulse button effect */
-  .pulse-button {
-    position: relative;
-  }
-  
-  .pulse-button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: hsl(var(--primary));
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    z-index: -1;
-  }
-  
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-      opacity: 0.7;
-    }
-    50% {
-      transform: scale(1.05);
-      opacity: 0.3;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 0.7;
-    }
-  }
-  
-  /* Skills and testimonial carousel styling */
-  .carousel-card {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 transition-all;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .carousel-card:hover {
-    @apply border-primary/30;
-    transform: translateY(-5px);
+  .social-icon {
+    @apply p-2.5 rounded-full text-foreground/70 bg-secondary transition-all hover:bg-primary hover:text-white hover:shadow-lg hover:shadow-primary/20;
   }
 }

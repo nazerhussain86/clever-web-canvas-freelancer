@@ -2,8 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { AtSign, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 
 const Contact = () => {
@@ -43,19 +42,19 @@ const Contact = () => {
 
   const contactInfo = [
     {
-      icon: <Mail className="h-5 w-5 text-primary" />,
+      icon: <AtSign className="h-6 w-6 text-primary" />,
       title: "Email",
-      value: "john.doe@example.com",
-      link: "mailto:john.doe@example.com",
+      value: "nazer.hussain@example.com",
+      link: "mailto:nazer.hussain@example.com",
     },
     {
-      icon: <Phone className="h-5 w-5 text-primary" />,
+      icon: <Phone className="h-6 w-6 text-primary" />,
       title: "Phone",
       value: "+1 (555) 123-4567",
       link: "tel:+15551234567",
     },
     {
-      icon: <MapPin className="h-5 w-5 text-primary" />,
+      icon: <MapPin className="h-6 w-6 text-primary" />,
       title: "Location",
       value: "San Francisco, CA",
       link: "#",
@@ -65,126 +64,109 @@ const Contact = () => {
   return (
     <section id="contact" className="section-padding">
       <div className="container mx-auto">
-        <h2 className="section-title gradient-text text-center">Get In Touch</h2>
-        <p className="text-center text-foreground/70 max-w-2xl mx-auto mb-16">
-          Have a project in mind or want to discuss potential opportunities?
-          I'd love to hear from you. Fill out the form below and I'll get back to you soon.
-        </p>
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="section-title title-underline-center gradient-text inline-block mb-8">Let's Connect</h2>
+          <p className="text-foreground/70">
+            Have a project in mind or want to discuss potential opportunities?
+            I'd love to hear from you.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
-          <div className="space-y-6">
+          <div className="lg:col-span-1 space-y-6">
             {contactInfo.map((info, index) => (
-              <Card
+              <a
                 key={index}
-                className="p-6 border border-primary/10 bg-secondary/30 card-hover"
+                href={info.link}
+                className="backdrop-panel p-6 flex items-start gap-4 card-hover no-underline text-foreground"
               >
-                <a
-                  href={info.link}
-                  className="flex items-start space-x-4 no-underline text-foreground"
-                >
-                  <div className="bg-background p-3 rounded-full">
-                    {info.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-lg">{info.title}</h3>
-                    <p className="text-foreground/70">{info.value}</p>
-                  </div>
-                </a>
-              </Card>
+                <div className="rounded-full bg-primary/10 p-3 flex-shrink-0">
+                  {info.icon}
+                </div>
+                <div>
+                  <h3 className="font-medium text-lg">{info.title}</h3>
+                  <p className="text-foreground/70">{info.value}</p>
+                </div>
+              </a>
             ))}
-
-            <div className="mt-8 pt-8 border-t border-primary/10">
-              <h3 className="text-lg font-medium mb-4">Connect With Me</h3>
-              <div className="flex space-x-4">
-                {["github", "linkedin", "twitter", "instagram"].map(
-                  (social) => (
-                    <a
-                      key={social}
-                      href={`#${social}`}
-                      className="bg-secondary hover:bg-primary/20 p-2 rounded-full transition-colors"
-                    >
-                      <img
-                        src={`https://cdn.simpleicons.org/${social}`}
-                        alt={social}
-                        className="w-5 h-5"
-                      />
-                    </a>
-                  )
-                )}
-              </div>
-            </div>
           </div>
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <Card className="p-8 border border-primary/10 bg-secondary/30">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Your Name
-                    </label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium">
-                      Your Email
-                    </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-
+            <form onSubmit={handleSubmit} className="backdrop-panel p-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-2">
-                  <label htmlFor="subject" className="text-sm font-medium">
-                    Subject
+                  <label htmlFor="name" className="text-sm font-medium block">
+                    Your Name
                   </label>
                   <Input
-                    id="subject"
-                    name="subject"
-                    placeholder="Project Inquiry"
-                    value={formData.subject}
+                    id="name"
+                    name="name"
+                    placeholder="John Doe"
+                    value={formData.name}
                     onChange={handleChange}
+                    className="bg-white/50 dark:bg-foreground/5"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium">
-                    Message
+                  <label htmlFor="email" className="text-sm font-medium block">
+                    Your Email
                   </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    placeholder="Tell me about your project..."
-                    rows={6}
-                    value={formData.message}
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="john@example.com"
+                    value={formData.email}
                     onChange={handleChange}
+                    className="bg-white/50 dark:bg-foreground/5"
                     required
                   />
                 </div>
+              </div>
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </Button>
-              </form>
-            </Card>
+              <div className="space-y-2 mb-6">
+                <label htmlFor="subject" className="text-sm font-medium block">
+                  Subject
+                </label>
+                <Input
+                  id="subject"
+                  name="subject"
+                  placeholder="Project Inquiry"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="bg-white/50 dark:bg-foreground/5"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2 mb-8">
+                <label htmlFor="message" className="text-sm font-medium block">
+                  Message
+                </label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  placeholder="Tell me about your project..."
+                  rows={6}
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="bg-white/50 dark:bg-foreground/5 resize-none"
+                  required
+                />
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full btn-shine rounded-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Sending..." : "Send Message"}
+              </Button>
+            </form>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, Mail } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 
 const Header = () => {
@@ -37,15 +37,16 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-background/90 backdrop-blur-md shadow-md py-4"
-          : "bg-transparent py-6"
+          ? "py-3 bg-white/80 dark:bg-foreground/80 backdrop-blur-md shadow-md"
+          : "py-5 bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-6 flex justify-between items-center">
-        <a href="#home" className="text-2xl font-bold gradient-text">
-          CodeCraft
+      <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
+        <a href="#home" className="text-2xl font-serif font-bold">
+          <span className="gradient-text">Nazer</span>
+          <span className="text-foreground">.dev</span>
         </a>
 
         {/* Desktop Navigation */}
@@ -54,25 +55,28 @@ const Header = () => {
             <a
               key={link.name}
               href={link.href}
-              className="text-foreground/80 hover:text-primary transition-colors"
+              className="nav-link text-foreground/80 font-medium"
             >
               {link.name}
             </a>
           ))}
-          <Button onClick={toggleTheme} variant="ghost" size="icon">
+          <Button onClick={toggleTheme} variant="ghost" size="icon" className="rounded-full">
             {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
           </Button>
-          <Button>Hire Me</Button>
+          <Button className="rounded-full flex items-center gap-2">
+            <Mail size={16} /> Contact Me
+          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center space-x-2">
-          <Button onClick={toggleTheme} variant="ghost" size="icon" className="mr-2">
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+        <div className="md:hidden flex items-center space-x-3">
+          <Button onClick={toggleTheme} variant="ghost" size="icon" className="rounded-full">
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </Button>
           <button
-            className="text-foreground/80 hover:text-primary"
+            className="text-foreground p-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -81,19 +85,21 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-md w-full">
-          <nav className="container mx-auto px-6 py-4 flex flex-col space-y-4">
+        <div className="md:hidden glass-panel mx-4 mt-2 animate-fade-in">
+          <nav className="flex flex-col px-4 py-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-foreground/80 hover:text-primary py-2"
+                className="py-3 border-b border-border/30 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
               </a>
             ))}
-            <Button className="mt-4">Hire Me</Button>
+            <Button className="mt-4 rounded-full flex items-center justify-center gap-2">
+              <Mail size={16} /> Contact Me
+            </Button>
           </nav>
         </div>
       )}
