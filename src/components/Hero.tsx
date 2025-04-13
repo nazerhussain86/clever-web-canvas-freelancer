@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -42,8 +43,9 @@ const Hero = () => {
       
       // Animation properties
       const speed = 0.5 + Math.random() * 1;
-      const directionX = Math.random() > 0.5 ? 1 : -1;
-      const directionY = Math.random() > 0.5 ? 1 : -1;
+      // Change from const to let for directionX and directionY
+      let directionX = Math.random() > 0.5 ? 1 : -1;
+      let directionY = Math.random() > 0.5 ? 1 : -1;
       let currentPosX = posX;
       let currentPosY = posY;
 
