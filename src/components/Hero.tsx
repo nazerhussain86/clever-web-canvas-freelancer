@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -30,31 +29,42 @@ const Hero = () => {
       container.removeChild(container.firstChild);
     }
 
-    // Create floating elements
+    // Create floating elements - restricted to right side
     programmingLanguages.forEach((lang, index) => {
       const element = document.createElement("div");
       element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
-      element.style.transform = `translate(${Math.random() * 80}vw, ${Math.random() * 60}vh)`;
+      
+      // Position elements only on the right half of the screen
+      const posX = 50 + Math.random() * 40; // 50% to 90% of viewport width
+      const posY = Math.random() * 80; // 0% to 80% of viewport height
+      element.style.transform = `translate(${posX}vw, ${posY}vh)`;
       element.textContent = lang.name;
       
       // Animation properties
       const speed = 0.5 + Math.random() * 1;
       const directionX = Math.random() > 0.5 ? 1 : -1;
       const directionY = Math.random() > 0.5 ? 1 : -1;
-      let posX = Math.random() * 80;
-      let posY = Math.random() * 60;
+      let currentPosX = posX;
+      let currentPosY = posY;
 
-      // Animate function
+      // Animate function - constrained to right side
       const animate = () => {
         // Update position
-        posX += speed * directionX * 0.05;
-        posY += speed * directionY * 0.05;
+        currentPosX += speed * directionX * 0.05;
+        currentPosY += speed * directionY * 0.05;
 
-        // Boundary check
-        if (posX < 0 || posX > 80) posX = Math.random() * 80;
-        if (posY < 0 || posY > 60) posY = Math.random() * 60;
+        // Boundary check - keep on right side
+        if (currentPosX < 50 || currentPosX > 90) {
+          currentPosX = Math.max(50, Math.min(90, currentPosX));
+          directionX *= -1; // Reverse direction when hitting boundary
+        }
+        
+        if (currentPosY < 0 || currentPosY > 80) {
+          currentPosY = Math.max(0, Math.min(80, currentPosY));
+          directionY *= -1; // Reverse direction when hitting boundary
+        }
 
-        element.style.transform = `translate(${posX}vw, ${posY}vh)`;
+        element.style.transform = `translate(${currentPosX}vw, ${currentPosY}vh)`;
         requestAnimationFrame(animate);
       };
 
@@ -92,69 +102,74 @@ const Hero = () => {
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background z-0"></div>
       
-      {/* Floating programming languages container */}
+      {/* Floating programming languages container - positioned to overlay the right side */}
       <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden pointer-events-none"></div>
       
-      {/* Animated patterns - remove the small circle on right top */}
+      {/* Animated patterns - bottom left circle only */}
       <div className="absolute bottom-20 left-10 w-32 h-32 border border-primary/10 rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-50"></div>
-      <div className="absolute top-1/2 left-1/4 w-10 h-10 bg-blue-400/10 rounded-full animate-pulse"></div>
       
       <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-3xl animate-fade-in">
-          <div className="inline-flex items-center px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
-            <span className="animate-pulse mr-2 h-2 w-2 rounded-full bg-primary"></span>
-            <p className="text-sm">Full Stack Developer & Problem Solver</p>
-          </div>
-          
-          <p className="text-primary mb-2">Hello, I'm</p>
-          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 relative pulse-text">
-            Nazer Hussain A
-            <span className="absolute -bottom-2 left-0 w-1/3 h-1 bg-gradient-to-r from-primary to-transparent"></span>
-          </h1>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground/80 mb-6">
-            Full Stack Developer &{" "}
-            <span className="gradient-text">Problem Solver</span>
-          </h2>
-          <p className="text-lg text-foreground/70 mb-8 max-w-2xl">
-            I build exceptional digital experiences with modern technologies.
-            Specializing in creating robust web applications with React, Node.js,
-            and cloud infrastructure.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="shine-effect hover:bg-primary/80 transition-colors">View My Work</Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={handleDownloadCV}
-              className="flex items-center gap-2 hover:bg-primary/10 transition-colors"
-            >
-              <Download size={18} /> Download CV
-            </Button>
-            <Button 
-              size="lg" 
-              variant="secondary" 
-              className="flex items-center gap-2 pulse-button"
-            >
-              Hire Me
-            </Button>
-          </div>
-          
-          {/* Social links */}
-          <div className="mt-8 flex items-center gap-4">
-            <p className="text-sm text-foreground/60">Find me on:</p>
-            <div className="flex gap-3">
-              <a href="#" className="p-2 rounded-full bg-secondary/50 hover:bg-primary/20 transition-colors">
-                <Github size={18} />
-              </a>
-              <a href="#" className="p-2 rounded-full bg-secondary/50 hover:bg-primary/20 transition-colors">
-                <Linkedin size={18} />
-              </a>
-              <a href="#" className="p-2 rounded-full bg-secondary/50 hover:bg-primary/20 transition-colors">
-                <Twitter size={18} />
-              </a>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left side - Fixed content */}
+          <div className="animate-fade-in md:pr-8">
+            <div className="inline-flex items-center px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
+              <span className="animate-pulse mr-2 h-2 w-2 rounded-full bg-primary"></span>
+              <p className="text-sm">Full Stack Developer & Problem Solver</p>
+            </div>
+            
+            <p className="text-primary mb-2">Hello, I'm</p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 relative pulse-text">
+              Nazer Hussain A
+              <span className="absolute -bottom-2 left-0 w-1/3 h-1 bg-gradient-to-r from-primary to-transparent"></span>
+            </h1>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl text-foreground/80 mb-6">
+              Full Stack Developer &{" "}
+              <span className="gradient-text">Problem Solver</span>
+            </h2>
+            <p className="text-lg text-foreground/70 mb-8 max-w-xl">
+              I build exceptional digital experiences with modern technologies.
+              Specializing in creating robust web applications with React, Node.js,
+              and cloud infrastructure.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button size="lg" className="shine-effect hover:bg-primary/80 transition-colors">View My Work</Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={handleDownloadCV}
+                className="flex items-center gap-2 hover:bg-primary/10 transition-colors"
+              >
+                <Download size={18} /> Download CV
+              </Button>
+              <Button 
+                size="lg" 
+                variant="secondary" 
+                className="flex items-center gap-2 pulse-button"
+              >
+                Hire Me
+              </Button>
+            </div>
+            
+            {/* Social links */}
+            <div className="mt-8 flex items-center gap-4">
+              <p className="text-sm text-foreground/60">Find me on:</p>
+              <div className="flex gap-3">
+                <a href="#" className="p-2 rounded-full bg-secondary/50 hover:bg-primary/20 transition-colors">
+                  <Github size={18} />
+                </a>
+                <a href="#" className="p-2 rounded-full bg-secondary/50 hover:bg-primary/20 transition-colors">
+                  <Linkedin size={18} />
+                </a>
+                <a href="#" className="p-2 rounded-full bg-secondary/50 hover:bg-primary/20 transition-colors">
+                  <Twitter size={18} />
+                </a>
+              </div>
             </div>
           </div>
+          
+          {/* Right side - Empty for floating languages */}
+          <div className="hidden md:block"></div>
         </div>
       </div>
       
