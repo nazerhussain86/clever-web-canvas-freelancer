@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -19,7 +20,7 @@ const programmingLanguages = [
 const Hero = () => {
   const floatingElementsRef = useRef<HTMLDivElement>(null);
 
-  // Initialize floating elements
+  // Initialize floating elements with improved collision detection
   useEffect(() => {
     const container = floatingElementsRef.current;
     if (!container) return;
@@ -29,142 +30,211 @@ const Hero = () => {
       container.removeChild(container.firstChild);
     }
     
-    // Get the container dimensions for boundary checks
+    // Get container dimensions
     const containerRect = container.getBoundingClientRect();
     const containerWidth = containerRect.width;
     const containerHeight = containerRect.height;
     
-    // Distribute elements throughout the entire container
+    // Store all element data for collision detection
+    const elements: Array<{
+      element: HTMLDivElement;
+      width: number;
+      height: number;
+      posX: number;
+      posY: number;
+      dirX: number;
+      dirY: number;
+      speed: number;
+    }> = [];
+
+    // Create grid cells to help with initial placement
+    const cellSize = 120; // Size of each cell
+    const gridCols = Math.floor(containerWidth / cellSize);
+    const gridRows = Math.floor(containerHeight / cellSize);
+    const occupiedCells: boolean[][] = Array(gridRows).fill(0).map(() => Array(gridCols).fill(false));
+    
+    // Create elements with improved initial positioning
     programmingLanguages.forEach((lang) => {
       const element = document.createElement("div");
       element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
-      
-      // Distribute randomly across the entire container space
-      const posX = Math.random() * (containerWidth - 100); // 100 is approximate element width
-      const posY = Math.random() * (containerHeight - 40); // 40 is approximate element height
-      
-      element.style.transform = `translate(${posX}px, ${posY}px)`;
-      element.textContent = lang.name;
-      
-      // Animation properties
-      const speed = 0.2 + Math.random() * 0.3; // Lower speed for smoother movement
-      let directionX = Math.random() > 0.5 ? 1 : -1;
-      let directionY = Math.random() > 0.5 ? 1 : -1;
-      let currentPosX = posX;
-      let currentPosY = posY;
-
-      // Add to container
       container.appendChild(element);
       
-      // Get actual element dimensions after rendering
+      // Get element dimensions after adding to DOM
       const elementRect = element.getBoundingClientRect();
-      const actualWidth = elementRect.width;
-      const actualHeight = elementRect.height;
-
-      // Collision detection
-      const checkCollision = () => {
-        const elementRect = element.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
+      const elementWidth = elementRect.width;
+      const elementHeight = elementRect.height;
+      
+      // Find an unoccupied cell for initial placement
+      let cellRow = -1, cellCol = -1;
+      let attempts = 0;
+      const maxAttempts = gridRows * gridCols;
+      
+      // Try to find an unoccupied cell
+      while (attempts < maxAttempts) {
+        const randomRow = Math.floor(Math.random() * gridRows);
+        const randomCol = Math.floor(Math.random() * gridCols);
         
-        // Create a margin inside container boundaries to keep elements fully visible
-        const margin = 5;
-        
-        // Check for container boundaries
-        if (elementRect.left < containerRect.left + margin) {
-          currentPosX = margin;
-          directionX *= -1;
+        if (!occupiedCells[randomRow][randomCol]) {
+          cellRow = randomRow;
+          cellCol = randomCol;
+          occupiedCells[randomRow][randomCol] = true;
+          break;
         }
-        
-        if (elementRect.right > containerRect.right - margin) {
-          currentPosX = containerRect.width - actualWidth - margin;
-          directionX *= -1;
-        }
-        
-        if (elementRect.top < containerRect.top + margin) {
-          currentPosY = margin;
-          directionY *= -1;
-        }
-        
-        if (elementRect.bottom > containerRect.bottom - margin) {
-          currentPosY = containerRect.height - actualHeight - margin;
-          directionY *= -1;
-        }
-        
-        // Check collision with other elements
-        let hasCollision = false;
-        container.childNodes.forEach((node) => {
-          if (node !== element) {
-            const otherRect = (node as Element).getBoundingClientRect();
-            
-            // Detect overlap - add a small buffer for visual separation
-            if (
-              elementRect.left < otherRect.right + 5 &&
-              elementRect.right + 5 > otherRect.left &&
-              elementRect.top < otherRect.bottom + 5 &&
-              elementRect.bottom + 5 > otherRect.top
-            ) {
-              hasCollision = true;
-              // Change direction on collision
-              directionX *= -1;
-              directionY *= -1;
-            }
-          }
-        });
-        
-        return hasCollision;
-      };
-
-      // Animate function - use full container
-      const animate = () => {
-        // Update position
-        currentPosX += speed * directionX * 0.5;
-        currentPosY += speed * directionY * 0.5;
-
-        // Boundary check - full container
-        const maxX = containerWidth - actualWidth;
-        const maxY = containerHeight - actualHeight;
-        
-        if (currentPosX < 0 || currentPosX > maxX) {
-          // Bounce off the horizontal boundary
-          currentPosX = Math.max(0, Math.min(maxX, currentPosX));
-          directionX *= -1; // Reverse direction
-        }
-        
-        if (currentPosY < 0 || currentPosY > maxY) {
-          // Bounce off the vertical boundary
-          currentPosY = Math.max(0, Math.min(maxY, currentPosY));
-          directionY *= -1; // Reverse direction
-        }
-
-        // Apply the new position
-        element.style.transform = `translate(${currentPosX}px, ${currentPosY}px)`;
-        
-        // Check for collisions periodically
-        if (Math.random() < 0.05) {
-          if (checkCollision()) {
-            // If collision, slightly adjust position and direction
-            currentPosX += directionX * 5;
-            currentPosY += directionY * 5;
-          }
-        }
-        
-        requestAnimationFrame(animate);
-      };
-
-      // Start animation
-      requestAnimationFrame(animate);
+        attempts++;
+      }
+      
+      // If all cells are occupied, just place randomly
+      let posX = 0;
+      let posY = 0;
+      
+      if (cellRow >= 0 && cellCol >= 0) {
+        // Calculate position within the cell with some random offset
+        posX = cellCol * cellSize + (Math.random() * 20);
+        posY = cellRow * cellSize + (Math.random() * 20);
+      } else {
+        // Random position as fallback
+        posX = Math.random() * (containerWidth - elementWidth);
+        posY = Math.random() * (containerHeight - elementHeight);
+      }
+      
+      // Ensure the element is within container boundaries
+      posX = Math.max(0, Math.min(posX, containerWidth - elementWidth));
+      posY = Math.max(0, Math.min(posY, containerHeight - elementHeight));
+      
+      element.style.transform = `translate(${posX}px, ${posY}px)`;
+      
+      // Initialize movement properties
+      const speed = 0.1 + Math.random() * 0.2; // Lower speed for smoother movement
+      const dirX = Math.random() > 0.5 ? 1 : -1;
+      const dirY = Math.random() > 0.5 ? 1 : -1;
+      
+      // Add to elements array for collision detection
+      elements.push({
+        element,
+        width: elementWidth,
+        height: elementHeight,
+        posX,
+        posY,
+        dirX,
+        dirY,
+        speed
+      });
     });
     
-    // Update container dimensions on window resize
+    // Animation loop with improved collision detection
+    const animate = () => {
+      // Update each element position
+      elements.forEach((el, idx) => {
+        // Update position with speed
+        el.posX += el.speed * el.dirX;
+        el.posY += el.speed * el.dirY;
+        
+        // Boundary collision detection with smoother bounce
+        if (el.posX <= 0 || el.posX >= containerWidth - el.width) {
+          el.dirX *= -1; // Reverse direction
+          
+          // Adjust position to prevent sticking to boundaries
+          if (el.posX < 0) {
+            el.posX = 0;
+          } else if (el.posX > containerWidth - el.width) {
+            el.posX = containerWidth - el.width;
+          }
+        }
+        
+        if (el.posY <= 0 || el.posY >= containerHeight - el.height) {
+          el.dirY *= -1; // Reverse direction
+          
+          // Adjust position to prevent sticking to boundaries
+          if (el.posY < 0) {
+            el.posY = 0;
+          } else if (el.posY > containerHeight - el.height) {
+            el.posY = containerHeight - el.height;
+          }
+        }
+        
+        // Improved element-element collision detection
+        for (let i = 0; i < elements.length; i++) {
+          if (i !== idx) { // Don't check collision with self
+            const other = elements[i];
+            
+            // Calculate element centers for improved collision
+            const thisCenter = { 
+              x: el.posX + el.width / 2, 
+              y: el.posY + el.height / 2 
+            };
+            
+            const otherCenter = { 
+              x: other.posX + other.width / 2, 
+              y: other.posY + other.height / 2 
+            };
+            
+            // Calculate minimum distance needed to avoid collision
+            const minDistX = (el.width + other.width) / 2;
+            const minDistY = (el.height + other.height) / 2;
+            
+            // Calculate actual distance between centers
+            const actualDistX = Math.abs(thisCenter.x - otherCenter.x);
+            const actualDistY = Math.abs(thisCenter.y - otherCenter.y);
+            
+            // Check if collision occurred
+            if (actualDistX < minDistX && actualDistY < minDistY) {
+              // Determine direction of collision and bounce
+              const overlapX = minDistX - actualDistX;
+              const overlapY = minDistY - actualDistY;
+              
+              // Adjust position based on collision direction
+              if (overlapX < overlapY) {
+                // Horizontal collision
+                el.dirX *= -1;
+                // Push apart slightly to prevent sticking
+                if (thisCenter.x < otherCenter.x) {
+                  el.posX -= overlapX / 2;
+                  other.posX += overlapX / 2;
+                } else {
+                  el.posX += overlapX / 2;
+                  other.posX -= overlapX / 2;
+                }
+              } else {
+                // Vertical collision
+                el.dirY *= -1;
+                // Push apart slightly to prevent sticking
+                if (thisCenter.y < otherCenter.y) {
+                  el.posY -= overlapY / 2;
+                  other.posY += overlapY / 2;
+                } else {
+                  el.posY += overlapY / 2;
+                  other.posY -= overlapY / 2;
+                }
+              }
+              
+              // Ensure we don't push elements outside boundaries
+              el.posX = Math.max(0, Math.min(el.posX, containerWidth - el.width));
+              el.posY = Math.max(0, Math.min(el.posY, containerHeight - el.height));
+              other.posX = Math.max(0, Math.min(other.posX, containerWidth - other.width));
+              other.posY = Math.max(0, Math.min(other.posY, containerHeight - other.height));
+            }
+          }
+        }
+        
+        // Apply the new position
+        el.element.style.transform = `translate(${el.posX}px, ${el.posY}px)`;
+      });
+      
+      requestAnimationFrame(animate);
+    };
+    
+    // Start animation
+    requestAnimationFrame(animate);
+    
+    // Handle window resize
     const handleResize = () => {
-      // Reinitialize the floating elements when window is resized
+      // Re-initialize when window size changes
       while (container.firstChild) {
         container.removeChild(container.firstChild);
       }
       
-      // Delay reinitialization slightly to ensure container dimensions are updated
+      // Delay reinitialization to ensure container dimensions are updated
       setTimeout(() => {
-        // Call the useEffect function again
         const event = new Event('resize');
         window.dispatchEvent(event);
       }, 200);
@@ -265,7 +335,7 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Right side - Container for floating languages - now using full container space */}
+          {/* Right side - Container for floating languages */}
           <div className="hidden md:block relative h-[400px]">
             {/* Fixed height container for better control of floating elements */}
             <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden"></div>
