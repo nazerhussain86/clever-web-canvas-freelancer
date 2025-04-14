@@ -37,25 +37,66 @@ const Hero = () => {
     // Calculate the right side starting point (50% of container width)
     const rightSideStart = containerWidth * 0.5;
 
+    // Create a grid system to prevent overlaps
+    const gridCellWidth = 150; // Width of each grid cell
+    const gridCellHeight = 60; // Height of each grid cell
+    
+    // Calculate number of cells in grid
+    const gridColumns = Math.floor((containerWidth * 0.5) / gridCellWidth);
+    const gridRows = Math.floor(containerHeight / gridCellHeight);
+    
+    // Create an occupancy grid to track filled positions
+    const occupancyGrid = Array(gridRows).fill(0).map(() => Array(gridColumns).fill(false));
+    
+    // Function to find an empty cell
+    const findEmptyCell = () => {
+      const availableCells = [];
+      
+      // Find all available cells
+      for (let row = 0; row < gridRows; row++) {
+        for (let col = 0; col < gridColumns; col++) {
+          if (!occupancyGrid[row][col]) {
+            availableCells.push({ row, col });
+          }
+        }
+      }
+      
+      // If we have available cells, pick one randomly
+      if (availableCells.length > 0) {
+        const randomIndex = Math.floor(Math.random() * availableCells.length);
+        return availableCells[randomIndex];
+      }
+      
+      // If all cells are filled, generate a position with some offset from existing items
+      const randomRow = Math.floor(Math.random() * gridRows);
+      const randomCol = Math.floor(Math.random() * gridColumns);
+      return { row: randomRow, col: randomCol };
+    };
+
     // Create floating elements - restricted to right side
     programmingLanguages.forEach((lang) => {
       const element = document.createElement("div");
       element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
       
+      // Find an empty cell in our grid
+      const { row, col } = findEmptyCell();
+      
+      // Mark this cell as occupied
+      occupancyGrid[row][col] = true;
+      
+      // Calculate pixel position based on grid cell
+      const posX = rightSideStart + (col * gridCellWidth) + (Math.random() * 20); // Add small random offset
+      const posY = (row * gridCellHeight) + (Math.random() * 20); // Add small random offset
+      
       // Size of the element (rough estimate - will be updated after rendering)
       const elementWidth = 100; // approximate width in pixels
       const elementHeight = 30; // approximate height in pixels
-      
-      // Position elements only on the right half of the container
-      // We use pixel values directly for precise positioning
-      const posX = rightSideStart + Math.random() * (containerWidth * 0.5 - elementWidth);
-      const posY = Math.random() * (containerHeight - elementHeight);
       
       element.style.transform = `translate(${posX}px, ${posY}px)`;
       element.textContent = lang.name;
       
       // Animation properties
-      const speed = 0.5 + Math.random() * 1;
+      const speed = 0.2 + Math.random() * 0.3; // Lower speed to reduce chances of overlap
       let directionX = Math.random() > 0.5 ? 1 : -1;
       let directionY = Math.random() > 0.5 ? 1 : -1;
       let currentPosX = posX;
@@ -69,11 +110,39 @@ const Hero = () => {
       const actualWidth = elementRect.width;
       const actualHeight = elementRect.height;
 
+      // Collision detection
+      const checkCollision = () => {
+        const elementRect = element.getBoundingClientRect();
+        let hasCollision = false;
+        
+        // Check collision with every other element
+        container.childNodes.forEach((node) => {
+          if (node !== element) {
+            const otherRect = (node as Element).getBoundingClientRect();
+            
+            // Detect overlap - add a small buffer for visual separation
+            if (
+              elementRect.left < otherRect.right + 5 &&
+              elementRect.right + 5 > otherRect.left &&
+              elementRect.top < otherRect.bottom + 5 &&
+              elementRect.bottom + 5 > otherRect.top
+            ) {
+              hasCollision = true;
+              // Change direction on collision
+              directionX *= -1;
+              directionY *= -1;
+            }
+          }
+        });
+        
+        return hasCollision;
+      };
+
       // Animate function - constrained to container
       const animate = () => {
-        // Update position
-        currentPosX += speed * directionX * 0.5;
-        currentPosY += speed * directionY * 0.5;
+        // Update position with reduced movement
+        currentPosX += speed * directionX * 0.3;
+        currentPosY += speed * directionY * 0.3;
 
         // Boundary check - keep on right side of container
         if (currentPosX < rightSideStart || currentPosX > containerWidth - actualWidth) {
@@ -88,7 +157,18 @@ const Hero = () => {
           directionY *= -1; // Reverse direction when hitting boundary
         }
 
+        // Apply the new position
         element.style.transform = `translate(${currentPosX}px, ${currentPosY}px)`;
+        
+        // Check for collisions periodically (not every frame to improve performance)
+        if (Math.random() < 0.05) {
+          if (checkCollision()) {
+            // If collision, slightly adjust position
+            currentPosX += directionX * 5;
+            currentPosY += directionY * 5;
+          }
+        }
+        
         requestAnimationFrame(animate);
       };
 
