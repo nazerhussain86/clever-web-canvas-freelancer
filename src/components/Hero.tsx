@@ -1,7 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowDown, Download, Github, Linkedin, Twitter } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define our programming languages data
 const programmingLanguages = [
@@ -19,9 +20,18 @@ const programmingLanguages = [
 
 const Hero = () => {
   const floatingElementsRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const [shouldRender, setShouldRender] = useState(false);
 
   // Initialize floating elements with improved collision detection
   useEffect(() => {
+    // Only create floating elements if not on mobile
+    if (isMobile === undefined) return; // Wait until we know if mobile or not
+    
+    setShouldRender(!isMobile);
+
+    if (isMobile) return; // Don't create floating elements on mobile
+
     const container = floatingElementsRef.current;
     if (!container) return;
 
@@ -47,8 +57,8 @@ const Hero = () => {
       speed: number;
     }> = [];
 
-    // Create grid cells to help with initial placement
-    const cellSize = 120; // Size of each cell
+    // Create grid cells to help with initial placement - increase cell size for better spacing
+    const cellSize = 150; // Increased size for better readability
     const gridCols = Math.floor(containerWidth / cellSize);
     const gridRows = Math.floor(containerHeight / cellSize);
     const occupiedCells: boolean[][] = Array(gridRows).fill(0).map(() => Array(gridCols).fill(false));
@@ -56,7 +66,8 @@ const Hero = () => {
     // Create elements with improved initial positioning
     programmingLanguages.forEach((lang) => {
       const element = document.createElement("div");
-      element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
+      element.className = `absolute ${lang.color} px-4 py-2 rounded-lg shadow-lg text-white font-medium z-10 text-base opacity-90 hover:opacity-100 transition-opacity cursor-default`;
+      element.textContent = lang.name; // Set text content directly
       container.appendChild(element);
       
       // Get element dimensions after adding to DOM
@@ -88,23 +99,23 @@ const Hero = () => {
       let posY = 0;
       
       if (cellRow >= 0 && cellCol >= 0) {
-        // Calculate position within the cell with some random offset
+        // Calculate position within the cell with some random offset to better distribute
         posX = cellCol * cellSize + (Math.random() * 20);
         posY = cellRow * cellSize + (Math.random() * 20);
       } else {
         // Random position as fallback
-        posX = Math.random() * (containerWidth - elementWidth);
-        posY = Math.random() * (containerHeight - elementHeight);
+        posX = Math.random() * (containerWidth - elementWidth - 20); // Add margin
+        posY = Math.random() * (containerHeight - elementHeight - 20); // Add margin
       }
       
-      // Ensure the element is within container boundaries
-      posX = Math.max(0, Math.min(posX, containerWidth - elementWidth));
-      posY = Math.max(0, Math.min(posY, containerHeight - elementHeight));
+      // Ensure the element is within container boundaries with margin
+      posX = Math.max(10, Math.min(posX, containerWidth - elementWidth - 10));
+      posY = Math.max(10, Math.min(posY, containerHeight - elementHeight - 10));
       
       element.style.transform = `translate(${posX}px, ${posY}px)`;
       
-      // Initialize movement properties
-      const speed = 0.1 + Math.random() * 0.2; // Lower speed for smoother movement
+      // Initialize movement properties - use medium speed
+      const speed = 0.2 + Math.random() * 0.1; // Medium speed for better visibility
       const dirX = Math.random() > 0.5 ? 1 : -1;
       const dirY = Math.random() > 0.5 ? 1 : -1;
       
@@ -135,9 +146,9 @@ const Hero = () => {
           
           // Adjust position to prevent sticking to boundaries
           if (el.posX < 0) {
-            el.posX = 0;
+            el.posX = 5;
           } else if (el.posX > containerWidth - el.width) {
-            el.posX = containerWidth - el.width;
+            el.posX = containerWidth - el.width - 5;
           }
         }
         
@@ -146,9 +157,9 @@ const Hero = () => {
           
           // Adjust position to prevent sticking to boundaries
           if (el.posY < 0) {
-            el.posY = 0;
+            el.posY = 5;
           } else if (el.posY > containerHeight - el.height) {
-            el.posY = containerHeight - el.height;
+            el.posY = containerHeight - el.height - 5;
           }
         }
         
@@ -172,15 +183,18 @@ const Hero = () => {
             const minDistX = (el.width + other.width) / 2;
             const minDistY = (el.height + other.height) / 2;
             
+            // Add a small buffer to prevent elements from getting too close
+            const buffer = 5;
+            
             // Calculate actual distance between centers
             const actualDistX = Math.abs(thisCenter.x - otherCenter.x);
             const actualDistY = Math.abs(thisCenter.y - otherCenter.y);
             
             // Check if collision occurred
-            if (actualDistX < minDistX && actualDistY < minDistY) {
+            if (actualDistX < minDistX + buffer && actualDistY < minDistY + buffer) {
               // Determine direction of collision and bounce
-              const overlapX = minDistX - actualDistX;
-              const overlapY = minDistY - actualDistY;
+              const overlapX = minDistX + buffer - actualDistX;
+              const overlapY = minDistY + buffer - actualDistY;
               
               // Adjust position based on collision direction
               if (overlapX < overlapY) {
@@ -208,10 +222,10 @@ const Hero = () => {
               }
               
               // Ensure we don't push elements outside boundaries
-              el.posX = Math.max(0, Math.min(el.posX, containerWidth - el.width));
-              el.posY = Math.max(0, Math.min(el.posY, containerHeight - el.height));
-              other.posX = Math.max(0, Math.min(other.posX, containerWidth - other.width));
-              other.posY = Math.max(0, Math.min(other.posY, containerHeight - other.height));
+              el.posX = Math.max(5, Math.min(el.posX, containerWidth - el.width - 5));
+              el.posY = Math.max(5, Math.min(el.posY, containerHeight - el.height - 5));
+              other.posX = Math.max(5, Math.min(other.posX, containerWidth - other.width - 5));
+              other.posY = Math.max(5, Math.min(other.posY, containerHeight - other.height - 5));
             }
           }
         }
@@ -220,15 +234,20 @@ const Hero = () => {
         el.element.style.transform = `translate(${el.posX}px, ${el.posY}px)`;
       });
       
-      requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     };
     
     // Start animation
-    requestAnimationFrame(animate);
+    const animationRef = { current: 0 };
+    animationRef.current = requestAnimationFrame(animate);
     
-    // Handle window resize
+    // Handle window resize and cleanup
     const handleResize = () => {
       // Re-initialize when window size changes
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      
       while (container.firstChild) {
         container.removeChild(container.firstChild);
       }
@@ -243,9 +262,19 @@ const Hero = () => {
     window.addEventListener('resize', handleResize);
     
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isMobile]);
+
+  // Handle responsive behavior - reinitialize on mobile/desktop switch
+  useEffect(() => {
+    if (isMobile !== undefined) {
+      setShouldRender(!isMobile);
+    }
+  }, [isMobile]);
 
   const handleDownloadCV = () => {
     // Create a link element
@@ -336,9 +365,11 @@ const Hero = () => {
           </div>
           
           {/* Right side - Container for floating languages */}
-          <div className="hidden md:block relative h-[400px]">
-            {/* Fixed height container for better control of floating elements */}
-            <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden"></div>
+          <div className="hidden md:block relative h-[500px]">
+            {/* Only render floating elements container when not on mobile */}
+            {shouldRender && (
+              <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden"></div>
+            )}
           </div>
         </div>
       </div>
