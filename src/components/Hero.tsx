@@ -34,75 +34,26 @@ const Hero = () => {
     const containerWidth = containerRect.width;
     const containerHeight = containerRect.height;
     
-    // Calculate the right side starting point (50% of container width)
-    const rightSideStart = containerWidth * 0.5;
-
-    // Create a grid system to prevent overlaps
-    const gridCellWidth = 150; // Width of each grid cell
-    const gridCellHeight = 60; // Height of each grid cell
-    
-    // Calculate number of cells in grid
-    const gridColumns = Math.floor((containerWidth * 0.5) / gridCellWidth);
-    const gridRows = Math.floor(containerHeight / gridCellHeight);
-    
-    // Create an occupancy grid to track filled positions
-    const occupancyGrid = Array(gridRows).fill(0).map(() => Array(gridColumns).fill(false));
-    
-    // Function to find an empty cell
-    const findEmptyCell = () => {
-      const availableCells = [];
-      
-      // Find all available cells
-      for (let row = 0; row < gridRows; row++) {
-        for (let col = 0; col < gridColumns; col++) {
-          if (!occupancyGrid[row][col]) {
-            availableCells.push({ row, col });
-          }
-        }
-      }
-      
-      // If we have available cells, pick one randomly
-      if (availableCells.length > 0) {
-        const randomIndex = Math.floor(Math.random() * availableCells.length);
-        return availableCells[randomIndex];
-      }
-      
-      // If all cells are filled, generate a position with some offset from existing items
-      const randomRow = Math.floor(Math.random() * gridRows);
-      const randomCol = Math.floor(Math.random() * gridColumns);
-      return { row: randomRow, col: randomCol };
-    };
-
-    // Create floating elements - restricted to right side
+    // Distribute elements throughout the entire container
     programmingLanguages.forEach((lang) => {
       const element = document.createElement("div");
       element.className = `absolute ${lang.color} px-3 py-1 rounded-lg shadow-lg text-white font-medium z-10 opacity-80 hover:opacity-100 transition-opacity cursor-default`;
       
-      // Find an empty cell in our grid
-      const { row, col } = findEmptyCell();
-      
-      // Mark this cell as occupied
-      occupancyGrid[row][col] = true;
-      
-      // Calculate pixel position based on grid cell
-      const posX = rightSideStart + (col * gridCellWidth) + (Math.random() * 20); // Add small random offset
-      const posY = (row * gridCellHeight) + (Math.random() * 20); // Add small random offset
-      
-      // Size of the element (rough estimate - will be updated after rendering)
-      const elementWidth = 100; // approximate width in pixels
-      const elementHeight = 30; // approximate height in pixels
+      // Distribute randomly across the entire container space
+      const posX = Math.random() * (containerWidth - 100); // 100 is approximate element width
+      const posY = Math.random() * (containerHeight - 40); // 40 is approximate element height
       
       element.style.transform = `translate(${posX}px, ${posY}px)`;
       element.textContent = lang.name;
       
       // Animation properties
-      const speed = 0.2 + Math.random() * 0.3; // Lower speed to reduce chances of overlap
+      const speed = 0.2 + Math.random() * 0.3; // Lower speed for smoother movement
       let directionX = Math.random() > 0.5 ? 1 : -1;
       let directionY = Math.random() > 0.5 ? 1 : -1;
       let currentPosX = posX;
       let currentPosY = posY;
 
-      // Add to container to get actual dimensions
+      // Add to container
       container.appendChild(element);
       
       // Get actual element dimensions after rendering
@@ -113,9 +64,34 @@ const Hero = () => {
       // Collision detection
       const checkCollision = () => {
         const elementRect = element.getBoundingClientRect();
-        let hasCollision = false;
+        const containerRect = container.getBoundingClientRect();
         
-        // Check collision with every other element
+        // Create a margin inside container boundaries to keep elements fully visible
+        const margin = 5;
+        
+        // Check for container boundaries
+        if (elementRect.left < containerRect.left + margin) {
+          currentPosX = margin;
+          directionX *= -1;
+        }
+        
+        if (elementRect.right > containerRect.right - margin) {
+          currentPosX = containerRect.width - actualWidth - margin;
+          directionX *= -1;
+        }
+        
+        if (elementRect.top < containerRect.top + margin) {
+          currentPosY = margin;
+          directionY *= -1;
+        }
+        
+        if (elementRect.bottom > containerRect.bottom - margin) {
+          currentPosY = containerRect.height - actualHeight - margin;
+          directionY *= -1;
+        }
+        
+        // Check collision with other elements
+        let hasCollision = false;
         container.childNodes.forEach((node) => {
           if (node !== element) {
             const otherRect = (node as Element).getBoundingClientRect();
@@ -138,32 +114,35 @@ const Hero = () => {
         return hasCollision;
       };
 
-      // Animate function - constrained to container
+      // Animate function - use full container
       const animate = () => {
-        // Update position with reduced movement
-        currentPosX += speed * directionX * 0.3;
-        currentPosY += speed * directionY * 0.3;
+        // Update position
+        currentPosX += speed * directionX * 0.5;
+        currentPosY += speed * directionY * 0.5;
 
-        // Boundary check - keep on right side of container
-        if (currentPosX < rightSideStart || currentPosX > containerWidth - actualWidth) {
-          // Bounce off the boundary
-          currentPosX = Math.max(rightSideStart, Math.min(containerWidth - actualWidth, currentPosX));
-          directionX *= -1; // Reverse direction when hitting boundary
+        // Boundary check - full container
+        const maxX = containerWidth - actualWidth;
+        const maxY = containerHeight - actualHeight;
+        
+        if (currentPosX < 0 || currentPosX > maxX) {
+          // Bounce off the horizontal boundary
+          currentPosX = Math.max(0, Math.min(maxX, currentPosX));
+          directionX *= -1; // Reverse direction
         }
         
-        if (currentPosY < 0 || currentPosY > containerHeight - actualHeight) {
-          // Bounce off the boundary
-          currentPosY = Math.max(0, Math.min(containerHeight - actualHeight, currentPosY));
-          directionY *= -1; // Reverse direction when hitting boundary
+        if (currentPosY < 0 || currentPosY > maxY) {
+          // Bounce off the vertical boundary
+          currentPosY = Math.max(0, Math.min(maxY, currentPosY));
+          directionY *= -1; // Reverse direction
         }
 
         // Apply the new position
         element.style.transform = `translate(${currentPosX}px, ${currentPosY}px)`;
         
-        // Check for collisions periodically (not every frame to improve performance)
+        // Check for collisions periodically
         if (Math.random() < 0.05) {
           if (checkCollision()) {
-            // If collision, slightly adjust position
+            // If collision, slightly adjust position and direction
             currentPosX += directionX * 5;
             currentPosY += directionY * 5;
           }
@@ -226,7 +205,6 @@ const Hero = () => {
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background z-0"></div>
       
-      {/* Floating programming languages container - right side only */}
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left side - Fixed content */}
@@ -287,9 +265,9 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Right side - Container for floating languages */}
-          <div className="hidden md:block relative h-full">
-            {/* This div serves as a container for the floating elements */}
+          {/* Right side - Container for floating languages - now using full container space */}
+          <div className="hidden md:block relative h-[400px]">
+            {/* Fixed height container for better control of floating elements */}
             <div ref={floatingElementsRef} className="absolute inset-0 overflow-hidden"></div>
           </div>
         </div>
