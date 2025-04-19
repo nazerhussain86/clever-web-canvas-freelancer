@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -13,6 +13,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -94,6 +95,26 @@ const platforms: Platform[] = [
 
 const LearningPath = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+
+  // When the carousel API is available, set up listeners for slide changes
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const onSelect = () => {
+      setActiveIndex(api.selectedScrollSnap());
+    };
+
+    api.on("select", onSelect);
+    // Set initial index
+    setActiveIndex(api.selectedScrollSnap());
+
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
 
   return (
     <section className="section-padding relative overflow-hidden" id="learning">
@@ -113,7 +134,7 @@ const LearningPath = () => {
         <Carousel
           opts={{ loop: true }}
           className="w-full max-w-5xl mx-auto"
-          setActiveIndex={setActiveIndex}
+          setApi={setApi}
         >
           <CarouselContent>
             {platforms.map((platform, index) => (
