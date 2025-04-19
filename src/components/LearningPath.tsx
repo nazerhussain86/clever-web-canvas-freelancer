@@ -1,12 +1,6 @@
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Star } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -15,100 +9,21 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { Badge } from "@/components/ui/badge";
-import {
-  Trophy,
-  Code,
-  Brain,
-  Award,
-  Target,
-  CheckCircle2,
-  Star,
-  TrendingUp,
-  ExternalLink,
-} from "lucide-react";
-
-interface Platform {
-  name: string;
-  icon: React.ReactNode;
-  stats: string;
-  achievements: string[];
-  level: string;
-  color: string;
-  link: string;
-}
-
-const platforms: Platform[] = [
-  {
-    name: "LeetCode",
-    icon: <Code className="h-6 w-6" />,
-    stats: "300+ Problems Solved",
-    achievements: [
-      "Data Structures Expert",
-      "Algorithm Specialist",
-      "Dynamic Programming Master"
-    ],
-    level: "Advanced",
-    color: "from-yellow-400 to-orange-500",
-    link: "https://leetcode.com/yourusername"
-  },
-  {
-    name: "GeeksforGeeks",
-    icon: <Brain className="h-6 w-6" />,
-    stats: "500+ Practice Problems",
-    achievements: [
-      "Institute Rank #1",
-      "Problem Solving Expert",
-      "C++ Specialist"
-    ],
-    level: "Expert",
-    color: "from-green-400 to-emerald-500",
-    link: "https://geeksforgeeks.org/yourusername"
-  },
-  {
-    name: "HackerRank",
-    icon: <Trophy className="h-6 w-6" />,
-    stats: "5⭐ in Problem Solving",
-    achievements: [
-      "Python Gold Badge",
-      "SQL Platinum",
-      "Problem Solving Gold"
-    ],
-    level: "Advanced",
-    color: "from-emerald-400 to-cyan-500",
-    link: "https://hackerrank.com/yourusername"
-  },
-  {
-    name: "CodeChef",
-    icon: <Target className="h-6 w-6" />,
-    stats: "4⭐ Competitive Programmer",
-    achievements: [
-      "Contest Rating 2000+",
-      "Division 2 Winner",
-      "Long Challenge Expert"
-    ],
-    level: "Intermediate",
-    color: "from-brown-400 to-orange-600",
-    link: "https://codechef.com/yourusername"
-  }
-];
+import { platforms } from "@/data/platforms";
+import { PlatformCard } from "@/components/learning/PlatformCard";
 
 const LearningPath = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
 
-  // When the carousel API is available, set up listeners for slide changes
   useEffect(() => {
-    if (!api) {
-      return;
-    }
+    if (!api) return;
 
     const onSelect = () => {
       setActiveIndex(api.selectedScrollSnap());
     };
 
     api.on("select", onSelect);
-    // Set initial index
     setActiveIndex(api.selectedScrollSnap());
 
     return () => {
@@ -118,7 +33,6 @@ const LearningPath = () => {
 
   return (
     <section className="section-padding relative overflow-hidden" id="learning">
-      {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background"></div>
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
@@ -137,58 +51,9 @@ const LearningPath = () => {
           setApi={setApi}
         >
           <CarouselContent>
-            {platforms.map((platform, index) => (
+            {platforms.map((platform) => (
               <CarouselItem key={platform.name}>
-                <Card className="border border-primary/10 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-3 rounded-xl bg-gradient-to-br ${platform.color} text-white`}>
-                          {platform.icon}
-                        </div>
-                        <div>
-                          <CardTitle className="text-2xl">{platform.name}</CardTitle>
-                          <CardDescription className="flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-primary" />
-                            {platform.level}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="bg-primary/5">
-                        {platform.stats}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-4">
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-sm text-muted-foreground">
-                          Key Achievements
-                        </h4>
-                        <div className="grid gap-2">
-                          {platform.achievements.map((achievement, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center gap-2 text-sm bg-primary/5 p-2 rounded-lg"
-                            >
-                              <CheckCircle2 className="h-4 w-4 text-primary" />
-                              {achievement}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <a
-                        href={platform.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm text-primary hover:underline mt-4"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        View Profile
-                      </a>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PlatformCard platform={platform} />
               </CarouselItem>
             ))}
           </CarouselContent>
